@@ -1,0 +1,23 @@
+# Compiled output
+target/
+out/
+*.class
+
+# IDE files
+.idea/
+*.iml
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local scratch files
+*.tmp
