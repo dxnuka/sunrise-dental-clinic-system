@@ -1,0 +1,36 @@
+package com.sunrise.dental.model;
+
+/** Represents a staff member who can log in to the system. */
+public class User {
+    private int userId;
+    private String username;
+    private String passwordHash;
+    private String fullName;
+    private Integer birthYear;
+    private String gender; // MALE, FEMALE, OTHER
+    private String role;   // ADMIN or RECEPTIONIST
+
+    public User() {}
+
+    public User(int userId, String username, String fullName, String role) {
+        this.userId = userId;
+        this.username = username;
+        this.fullName = fullName;
+        this.role = role;
+    }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public Integer getBirthYear() { return birthYear; }
+    public void setBirthYear(Integer birthYear) { this.birthYear = birthYear; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+}
