@@ -283,6 +283,22 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         }
     }
 
+    @Override
+    public List<Appointment> findCreatedByUser(int userId) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = SELECT_SQL + "WHERE a.created_by = ? ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+        try (Connection con = DBConnectionManager.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error loading user's created appointments: " + e.getMessage(), e);
+        }
+        return list;
+    }
+
     private Appointment mapRow(ResultSet rs) throws SQLException {
         Appointment a = new Appointment();
         a.setAppointmentId(rs.getInt("appointment_id"));

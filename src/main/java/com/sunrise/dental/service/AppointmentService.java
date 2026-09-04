@@ -114,6 +114,11 @@ public class AppointmentService {
         return appointmentDAO.findScheduledForDentistOnDate(dentistId, date);
     }
 
+    /** Every appointment a given staff member registered - backs the admin-only user detail view. */
+    public List<Appointment> findCreatedByUser(int userId) {
+        return appointmentDAO.findCreatedByUser(userId);
+    }
+
     /** Changes an appointment's status (e.g. SCHEDULED -> COMPLETED or CANCELLED). */
     public void updateStatus(String appointmentNumber, String newStatus) throws ValidationException {
         ValidationUtil.requireNonBlank(appointmentNumber, "Appointment number");

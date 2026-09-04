@@ -39,4 +39,8 @@ public interface AppointmentDAO {
     Appointment findNextAppointmentForPatient(int patientId);
 
     void updateStatus(int appointmentId, String newStatus);
+
+    /** Every appointment a given staff member registered - backs the admin-only
+     *  user detail view (Manage Users -> click a user card). */
+    List<Appointment> findCreatedByUser(int userId);
 }

@@ -26,7 +26,7 @@ public final class DBConnectionManager {
     private static final String URL =
             "jdbc:mysql://localhost:3306/sunrise_dental?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String DB_USER = "dental_app";
-    private static final String DB_PASSWORD = "DentalApp#2026";
+    private static final String DB_PASSWORD = "password";
     // ---------------------------------------------------------------------
 
     private DBConnectionManager() {

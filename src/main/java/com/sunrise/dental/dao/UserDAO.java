@@ -1,5 +1,6 @@
 package com.sunrise.dental.dao;
 
+import com.sunrise.dental.model.PageResult;
 import com.sunrise.dental.model.User;
 
 public interface UserDAO {
@@ -15,4 +16,11 @@ public interface UserDAO {
 
     /** Updates only the password hash for a given user - used by a future "change password" feature. */
     void updatePassword(int userId, String newPasswordHash);
+
+    /** Backs the admin-only "Manage Users" page's searchable/filterable/paginated list. */
+    PageResult<User> findPaged(UserFilter filter);
+
+    /** Deletes a user account. created_by on any of their past appointments is set to
+     *  NULL (see the ON DELETE SET NULL foreign key) rather than blocking the delete. */
+    void delete(int userId);
 }

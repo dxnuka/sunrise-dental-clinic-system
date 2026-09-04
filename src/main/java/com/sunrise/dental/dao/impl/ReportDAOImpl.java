@@ -37,7 +37,7 @@ public class ReportDAOImpl implements ReportDAO {
 
     @Override
     public List<Map<String, Object>> outstandingBills(LocalDate from, LocalDate to) {
-        String sql = "SELECT b.bill_id, a.appointment_number, p.patient_name, b.total_amount, b.generated_at " +
+        String sql = "SELECT b.bill_id, a.appointment_number, p.patient_id, p.patient_name, b.total_amount, b.generated_at " +
                      "FROM bills b " +
                      "JOIN appointments a ON b.appointment_id = a.appointment_id " +
                      "JOIN patients p ON a.patient_id = p.patient_id " +
