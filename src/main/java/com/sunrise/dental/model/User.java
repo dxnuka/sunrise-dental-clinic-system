@@ -1,14 +1,13 @@
 package com.sunrise.dental.model;
 
-/** Represents a staff member who can log in to the system. */
 public class User {
     private int userId;
     private String username;
     private String passwordHash;
     private String fullName;
     private Integer birthYear;
-    private String gender; // MALE, FEMALE, OTHER
-    private String role;   // ADMIN or RECEPTIONIST
+    private String gender;
+    private String role;
 
     public User() {}
 

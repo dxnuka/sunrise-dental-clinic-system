@@ -23,13 +23,12 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             "JOIN treatments t ON a.treatment_id = t.treatment_id ";
 
     private static final String SELECT_SQL =
-            "SELECT a.appointment_id, a.appointment_number, a.appointment_date, a.appointment_time, a.status, " +
-            "p.patient_id, p.patient_name, p.address, p.contact_number, p.birth_year, p.gender, " +
-            "d.dentist_id, d.dentist_name, d.specialization, d.consultation_fee, " +
-            "t.treatment_id, t.treatment_name, t.base_fee, t.duration_minutes " +
-            JOIN_SQL;
+            "SELECT a.appointment_id, a.appointment_number, a.appointment_date, a.appointment_time, a.status, a.created_by, " +
+                    "p.patient_id, p.patient_name, p.address, p.contact_number, p.birth_year, p.gender, " +
+                    "d.dentist_id, d.dentist_name, d.specialization, d.consultation_fee, " +
+                    "t.treatment_id, t.treatment_name, t.base_fee, t.duration_minutes " +
+                    JOIN_SQL;
 
-    // Whitelisted sort columns - never build ORDER BY from raw user input.
     private static final Map<String, String> SORT_COLUMNS = new HashMap<>();
     static {
         SORT_COLUMNS.put("date", "a.appointment_date, a.appointment_time");
@@ -184,6 +183,15 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             where.append(" AND a.status = ? ");
             params.add(filter.getStatus());
         }
+        if (filter.getDateFrom() != null) {
+            where.append(" AND a.appointment_date >= ? ");
+            params.add(Date.valueOf(filter.getDateFrom()));
+        }
+        if (filter.getDateTo() != null) {
+            where.append(" AND a.appointment_date <= ? ");
+            params.add(Date.valueOf(filter.getDateTo()));
+        }
+
 
         String sortCol = SORT_COLUMNS.getOrDefault(filter.getSortField(), SORT_COLUMNS.get("date"));
         String sortDir = "desc".equalsIgnoreCase(filter.getSortDir()) ? "DESC" : "ASC";
@@ -306,6 +314,8 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         a.setAppointmentDate(rs.getDate("appointment_date").toLocalDate());
         a.setAppointmentTime(rs.getTime("appointment_time").toLocalTime());
         a.setStatus(rs.getString("status"));
+        int createdBy = rs.getInt("created_by");
+        a.setCreatedByUserId(rs.wasNull() ? null : createdBy);
 
         Patient p = new Patient();
         p.setPatientId(rs.getInt("patient_id"));

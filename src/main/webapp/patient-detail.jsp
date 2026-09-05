@@ -5,6 +5,8 @@
 <%
     PatientSummary summary = (PatientSummary) request.getAttribute("summary");
     String ctx = request.getContextPath();
+    User currentUser = (User) session.getAttribute("loggedInUser");
+    boolean isAdmin = currentUser != null && "ADMIN".equals(currentUser.getRole());
 %>
 
 <% if (summary == null) { %>
@@ -25,6 +27,14 @@
         <tr><th>Birth Year</th><td><%= patient.getBirthYear() != null ? patient.getBirthYear() : "-" %></td></tr>
         <tr><th>Gender</th><td><%= patient.getGender() != null ? patient.getGender() : "-" %></td></tr>
     </table>
+    <% if (isAdmin) { %>
+    <form method="post" action="<%= ctx %>/control" style="margin-top:14px;"
+          onsubmit="return confirm('Delete this patient record? This cannot be undone. (Only allowed if they have no appointment history.)');">
+        <input type="hidden" name="action" value="deletePatient">
+        <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+        <button type="submit" class="btn" style="background:#c0392b;">Delete Patient</button>
+    </form>
+    <% } %>
 </div>
 
 <div class="card">

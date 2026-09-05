@@ -9,13 +9,14 @@
     List<Treatment> treatments = (List<Treatment>) request.getAttribute("treatments");
     String ctx = request.getContextPath();
 
-    // Reusable query-string builder that keeps the current filters when changing page/sort.
     java.util.function.Function<Integer, String> pageLink = (pageNum) -> {
         StringBuilder sb = new StringBuilder(ctx + "/control?action=dashboard&page=" + pageNum);
         if (filter.getSearchTerm() != null) sb.append("&q=").append(java.net.URLEncoder.encode(filter.getSearchTerm(), java.nio.charset.StandardCharsets.UTF_8));
         if (filter.getDentistId() != null) sb.append("&dentistId=").append(filter.getDentistId());
         if (filter.getTreatmentId() != null) sb.append("&treatmentId=").append(filter.getTreatmentId());
         if (filter.getStatus() != null) sb.append("&status=").append(filter.getStatus());
+        if (filter.getDateFrom() != null) sb.append("&dateFrom=").append(filter.getDateFrom());
+        if (filter.getDateTo() != null) sb.append("&dateTo=").append(filter.getDateTo());
         sb.append("&sort=").append(filter.getSortField()).append("&dir=").append(filter.getSortDir());
         return sb.toString();
     };
@@ -57,6 +58,14 @@
                 <option value="COMPLETED" <%= "COMPLETED".equals(filter.getStatus()) ? "selected" : "" %>>Completed</option>
                 <option value="CANCELLED" <%= "CANCELLED".equals(filter.getStatus()) ? "selected" : "" %>>Cancelled</option>
             </select>
+        </div>
+        <div class="field">
+            <label>From</label>
+            <input type="date" name="dateFrom" value="<%= filter.getDateFrom() %>">
+        </div>
+        <div class="field">
+            <label>To</label>
+            <input type="date" name="dateTo" value="<%= filter.getDateTo() %>">
         </div>
         <div class="field">
             <label>Sort by</label>

@@ -8,9 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/** Handles submission of the admin-only "Add User" form - can create either
- *  a RECEPTIONIST or an ADMIN account. Access is restricted to ADMIN role by
- *  FrontControllerServlet's ADMIN_ONLY_ACTIONS check before this ever runs. */
 public class AddUserHandler implements RequestHandler {
     private final AuthService authService = new AuthService();
 

@@ -9,9 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-/** Public self-registration (a new staff member creating their own account,
- *  always as RECEPTIONIST - ADMIN accounts are created via the admin-only
- *  "Add User" page instead). */
+
 public class RegisterHandler implements RequestHandler {
     private final AuthService authService = new AuthService();
 

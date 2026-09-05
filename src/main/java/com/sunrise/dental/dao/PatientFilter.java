@@ -1,6 +1,5 @@
 package com.sunrise.dental.dao;
 
-/** Query-criteria object for the paginated patients list. */
 public class PatientFilter {
     private String searchTerm;         // matches patient name or contact number
     private String sortField = "name"; // name | registered

@@ -1,6 +1,5 @@
 package com.sunrise.dental.dao;
 
-/** Query-criteria object for the paginated Users list (admin-only "Manage Users" page). */
 public class UserFilter {
     private String searchTerm;        // matches username or full name
     private String role;              // null = any; else ADMIN or RECEPTIONIST

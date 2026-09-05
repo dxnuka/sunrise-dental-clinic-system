@@ -1,18 +1,9 @@
--- ============================================================================
--- Sunrise Dental Clinic - Appointment & Patient Management System
--- Database Schema for MySQL 8.x (build/run this in MySQL Workbench)
--- Running this file wipes and rebuilds the database from scratch.
--- If you already have data you want to keep, use migration_v3.sql instead
--- (or migration_v2.sql -> migration_v3.sql in sequence if upgrading from v1).
--- ============================================================================
 
 DROP DATABASE IF EXISTS sunrise_dental;
 CREATE DATABASE sunrise_dental CHARACTER SET utf8mb4;
 USE sunrise_dental;
 
--- ----------------------------------------------------------------------------
--- STAFF / LOGIN
--- ----------------------------------------------------------------------------
+
 CREATE TABLE users (
     user_id      INT AUTO_INCREMENT PRIMARY KEY,
     username     VARCHAR(50)  NOT NULL UNIQUE,
@@ -24,10 +15,6 @@ CREATE TABLE users (
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ----------------------------------------------------------------------------
--- DENTISTS  (consultation_fee lives here now, not on treatments - it's the
--- dentist's own consultation charge, which can differ doctor to doctor)
--- ----------------------------------------------------------------------------
 CREATE TABLE dentists (
     dentist_id       INT AUTO_INCREMENT PRIMARY KEY,
     dentist_name     VARCHAR(100) NOT NULL,
@@ -36,9 +23,7 @@ CREATE TABLE dentists (
     active           BOOLEAN DEFAULT TRUE
 );
 
--- ----------------------------------------------------------------------------
--- TREATMENTS (price + duration, used for billing and scheduling/overlap checks)
--- ----------------------------------------------------------------------------
+
 CREATE TABLE treatments (
     treatment_id     INT AUTO_INCREMENT PRIMARY KEY,
     treatment_name   VARCHAR(100) NOT NULL,
@@ -46,9 +31,7 @@ CREATE TABLE treatments (
     duration_minutes INT NOT NULL DEFAULT 30
 );
 
--- ----------------------------------------------------------------------------
--- PATIENTS
--- ----------------------------------------------------------------------------
+
 CREATE TABLE patients (
     patient_id     INT AUTO_INCREMENT PRIMARY KEY,
     patient_name   VARCHAR(100) NOT NULL,
@@ -61,9 +44,7 @@ CREATE TABLE patients (
 CREATE INDEX idx_patients_name ON patients(patient_name);
 CREATE INDEX idx_patients_contact ON patients(contact_number);
 
--- ----------------------------------------------------------------------------
--- APPOINTMENTS  (appointment_number is the unique business key shown to staff)
--- ----------------------------------------------------------------------------
+
 CREATE TABLE appointments (
     appointment_id     INT AUTO_INCREMENT PRIMARY KEY,
     appointment_number VARCHAR(20) NOT NULL UNIQUE,
@@ -78,15 +59,12 @@ CREATE TABLE appointments (
     CONSTRAINT fk_appt_patient   FOREIGN KEY (patient_id)   REFERENCES patients(patient_id),
     CONSTRAINT fk_appt_dentist   FOREIGN KEY (dentist_id)   REFERENCES dentists(dentist_id),
     CONSTRAINT fk_appt_treatment FOREIGN KEY (treatment_id) REFERENCES treatments(treatment_id),
-    CONSTRAINT fk_appt_user      FOREIGN KEY (created_by)   REFERENCES users(user_id)
+    CONSTRAINT fk_appt_user      FOREIGN KEY (created_by)   REFERENCES users(user_id) ON DELETE SET NULL
 );
 CREATE INDEX idx_appt_date ON appointments(appointment_date);
 CREATE INDEX idx_appt_dentist_date ON appointments(dentist_id, appointment_date);
 
--- ----------------------------------------------------------------------------
--- BILLS  (one bill per appointment - enforced by a UNIQUE constraint so a
--- second "Generate Bill" click can never create a duplicate row)
--- ----------------------------------------------------------------------------
+
 CREATE TABLE bills (
     bill_id        INT AUTO_INCREMENT PRIMARY KEY,
     appointment_id INT NOT NULL UNIQUE,
@@ -98,9 +76,7 @@ CREATE TABLE bills (
     CONSTRAINT fk_bill_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
 );
 
--- ----------------------------------------------------------------------------
--- AUDIT LOG  (populated by trigger - demonstrates traceability for testing)
--- ----------------------------------------------------------------------------
+
 CREATE TABLE audit_log (
     log_id      INT AUTO_INCREMENT PRIMARY KEY,
     table_name  VARCHAR(50),
@@ -110,9 +86,7 @@ CREATE TABLE audit_log (
     logged_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================================================
--- FUNCTION: fn_calculate_total
--- ============================================================================
+
 DELIMITER $$
 CREATE FUNCTION fn_calculate_total(
     p_base_fee DECIMAL(10,2),
@@ -124,15 +98,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- TRIGGER: trg_prevent_double_booking
--- Overlap-aware: each treatment has its own duration_minutes, so this checks
--- whether the new appointment's [start, start+duration) window overlaps ANY
--- existing SCHEDULED appointment's window for the same dentist on the same
--- date, rather than only rejecting an exact time match. The application
--- layer also checks slot availability before this ever fires (see
--- AvailableSlotsHandler) - this trigger is the DB-level safety net.
--- ============================================================================
+
 DELIMITER $$
 CREATE TRIGGER trg_prevent_double_booking
 BEFORE INSERT ON appointments
@@ -161,9 +127,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- TRIGGER: trg_audit_bill_insert
--- ============================================================================
+
 DELIMITER $$
 CREATE TRIGGER trg_audit_bill_insert
 AFTER INSERT ON bills
@@ -176,9 +140,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- STORED PROCEDURE: sp_register_appointment  (NEW patient + appointment)
--- ============================================================================
+
 DELIMITER $$
 CREATE PROCEDURE sp_register_appointment(
     IN  p_patient_name   VARCHAR(100),
@@ -215,9 +177,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- STORED PROCEDURE: sp_register_appointment_existing (EXISTING patient)
--- ============================================================================
+
 DELIMITER $$
 CREATE PROCEDURE sp_register_appointment_existing(
     IN  p_patient_id     INT,
@@ -245,14 +205,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- STORED PROCEDURE: sp_generate_bill
--- One bill per appointment: if a bill already exists for this appointment,
--- returns its existing id/total instead of inserting a duplicate row (the
--- UNIQUE constraint on bills.appointment_id is the hard guarantee; this
--- check just avoids throwing on a routine repeat click).
--- Consultation fee now comes from the DENTIST, not the treatment.
--- ============================================================================
 DELIMITER $$
 CREATE PROCEDURE sp_generate_bill(
     IN p_appointment_id INT,
@@ -287,9 +239,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- STORED PROCEDURE: sp_update_appointment_status
--- ============================================================================
+
 DELIMITER $$
 CREATE PROCEDURE sp_update_appointment_status(
     IN p_appointment_id INT,
@@ -300,11 +250,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ============================================================================
--- REPORT VIEWS (unfiltered - kept for quick ad-hoc inspection in Workbench;
--- the Reports screen itself uses date-ranged parameterised queries instead,
--- see ReportDAOImpl.java)
--- ============================================================================
+
 CREATE VIEW vw_daily_schedule AS
 SELECT a.appointment_number, a.appointment_date, a.appointment_time,
        p.patient_name, d.dentist_name, t.treatment_name, a.status
@@ -334,12 +280,7 @@ JOIN appointments a ON b.appointment_id = a.appointment_id
 JOIN patients p ON a.patient_id = p.patient_id
 WHERE b.payment_status = 'UNPAID';
 
--- ============================================================================
--- SEED DATA
--- ============================================================================
--- Default login -> username: admin  / password: Admin@123
--- Generate the real hash with PasswordUtil (see README.md) and replace this
--- placeholder before logging in.
+
 INSERT INTO users(username, password_hash, full_name, birth_year, gender, role) VALUES
 ('admin', 'REPLACE_WITH_PASSWORDUTIL_OUTPUT', 'Clinic Admin', 1990, 'OTHER', 'ADMIN');
 
@@ -356,6 +297,4 @@ INSERT INTO treatments(treatment_name, base_fee, duration_minutes) VALUES
 ('Tooth Extraction', 4000.00, 45),
 ('Braces Consultation', 2500.00, 30);
 
-   CREATE USER 'dental_app'@'localhost' IDENTIFIED BY 'DentalApp#2026';
-   GRANT ALL PRIVILEGES ON sunrise_dental.* TO 'dental_app'@'localhost';
-   FLUSH PRIVILEGES;
+UPDATE users SET password_hash = 'e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7' WHERE username = 'admin';

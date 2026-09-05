@@ -6,18 +6,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 
-/**
- * Centralised input validation used by every form-handling class in the
- * application ("restrict invalid entries to the system"). Each method
- * throws a ValidationException with a clear, field-specific message rather
- * than letting bad data reach the service/DAO layers.
- */
 public class ValidationUtil {
 
-    // Letters (incl. accented), spaces and hyphens only - rejects digits,
-    // apostrophes, and other special characters in name fields.
     private static final String NAME_PATTERN = "^[\\p{L} \\-]{2,100}$";
-    // Exactly 10 digits, nothing else (no spaces, dashes, letters, symbols).
+    private static final String DENTIST_NAME_PATTERN = "^[\\p{L} .\\-]{2,100}$";
     private static final String PHONE_PATTERN = "^[0-9]{10}$";
     private static final String USERNAME_PATTERN = "^[A-Za-z0-9_.]{4,30}$";
 
@@ -27,7 +19,6 @@ public class ValidationUtil {
         }
     }
 
-    /** Names: letters, spaces and hyphens only, 2-100 chars - no digits or symbols. */
     public static void requireValidName(String value, String fieldName) throws ValidationException {
         requireNonBlank(value, fieldName);
         if (!value.trim().matches(NAME_PATTERN)) {
@@ -35,7 +26,19 @@ public class ValidationUtil {
         }
     }
 
-    /** Contact numbers: exactly 10 digits, no spaces/dashes/letters. */
+    public static void requireValidDentistName(String value) throws ValidationException {
+        requireNonBlank(value, "Dentist name");
+        if (!value.trim().matches(DENTIST_NAME_PATTERN)) {
+            throw new ValidationException("Dentist name can only contain letters, spaces, hyphens and periods.");
+        }
+    }
+
+    public static void requireValidFee(java.math.BigDecimal value, String fieldName) throws ValidationException {
+        if (value == null || value.signum() <= 0) {
+            throw new ValidationException(fieldName + " must be a positive amount.");
+        }
+    }
+
     public static void requireValidPhone(String phone) throws ValidationException {
         requireNonBlank(phone, "Contact number");
         if (!phone.trim().matches(PHONE_PATTERN)) {
@@ -64,7 +67,6 @@ public class ValidationUtil {
         }
     }
 
-    /** Birth year: a plausible 4-digit year, not in the future, and not implausibly old. */
     public static void requireValidBirthYear(Integer birthYear) throws ValidationException {
         if (birthYear == null) throw new ValidationException("Birth year is required.");
         int currentYear = Year.now().getValue();
@@ -80,7 +82,6 @@ public class ValidationUtil {
         }
     }
 
-    /** Date must be today or in the future (never a past calendar date). */
     public static void requireFutureOrTodayDate(LocalDate date) throws ValidationException {
         if (date == null) throw new ValidationException("Appointment date is required.");
         if (date.isBefore(LocalDate.now())) {
@@ -88,7 +89,6 @@ public class ValidationUtil {
         }
     }
 
-    /** Selectable times are fixed 15-minute blocks between 08:00 and 17:00 inclusive. */
     public static void requireValidTimeSlot(LocalTime time) throws ValidationException {
         if (time == null) throw new ValidationException("Appointment time is required.");
         if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(17, 0))) {
@@ -99,9 +99,8 @@ public class ValidationUtil {
         }
     }
 
-    /** Rejects a date+time combination that has already passed, even if the date alone is today. */
     public static void requireNotPastDateTime(LocalDate date, LocalTime time) throws ValidationException {
-        if (date == null || time == null) return; // individual field checks already cover nulls
+        if (date == null || time == null) return;
         if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
             throw new ValidationException("That date and time has already passed. Please choose a future slot.");
         }

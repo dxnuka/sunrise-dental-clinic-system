@@ -5,6 +5,7 @@ import com.sunrise.dental.dao.TreatmentDAO;
 import com.sunrise.dental.exception.DoubleBookingException;
 import com.sunrise.dental.exception.ValidationException;
 import com.sunrise.dental.model.Appointment;
+import com.sunrise.dental.model.Patient;
 import com.sunrise.dental.model.Treatment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,17 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-/**
- * ---------------------------------------------------------------------------
- * TEST PLAN - AppointmentService
- * ---------------------------------------------------------------------------
- * Both AppointmentDAO and TreatmentDAO are mocked with Mockito, so these are
- * true *unit* tests - no real database is required to run them. The
- * double-booking and validation rules are tested first since the scenario
- * names "double bookings" as the clinic's biggest current problem, and
- * "restrict invalid entries" is an explicit brief requirement.
- * ---------------------------------------------------------------------------
- */
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest {
 
@@ -56,9 +46,12 @@ class AppointmentServiceTest {
         return new Treatment(1, "Root Canal Treatment", new BigDecimal("15000.00"), ROOT_CANAL_DURATION);
     }
 
-    // ------------------------------------------------------------------
-    // New-patient registration
-    // ------------------------------------------------------------------
+    private Appointment sampleFullAppointment(String appointmentNumber) {
+        Appointment appointment = new Appointment();
+        appointment.setAppointmentNumber(appointmentNumber);
+        appointment.setPatient(new Patient("Nimal Perera", "12 Galle Rd, Colombo", "0771234567", VALID_BIRTH_YEAR, VALID_GENDER));
+        return appointment;
+    }
 
     @Test
     @DisplayName("Rejects a new-patient booking when the dentist has an overlapping SCHEDULED appointment")
@@ -81,7 +74,7 @@ class AppointmentServiceTest {
         when(appointmentDAO.isSlotTaken(1, TOMORROW, TEN_AM, ROOT_CANAL_DURATION)).thenReturn(false);
         when(appointmentDAO.register(any(), eq(1), eq(1), eq(TOMORROW), eq(TEN_AM), eq(1)))
                 .thenReturn("APT00001");
-        when(appointmentDAO.findByAppointmentNumber("APT00001")).thenReturn(new Appointment());
+        when(appointmentDAO.findByAppointmentNumber("APT00001")).thenReturn(sampleFullAppointment("APT00001"));
 
         String result = appointmentService.registerForNewPatient("Nimal Perera", "12 Galle Rd, Colombo",
                 "0771234567", VALID_BIRTH_YEAR, VALID_GENDER, 1, 1, TOMORROW, TEN_AM, 1);
@@ -164,7 +157,7 @@ class AppointmentServiceTest {
         when(appointmentDAO.isSlotTaken(1, TOMORROW, quarterPast, ROOT_CANAL_DURATION)).thenReturn(false);
         when(appointmentDAO.register(any(), eq(1), eq(1), eq(TOMORROW), eq(quarterPast), eq(1)))
                 .thenReturn("APT00003");
-        when(appointmentDAO.findByAppointmentNumber("APT00003")).thenReturn(new Appointment());
+        when(appointmentDAO.findByAppointmentNumber("APT00003")).thenReturn(sampleFullAppointment("APT00003"));
 
         String result = appointmentService.registerForNewPatient("Nimal Perera", "12 Galle Rd, Colombo",
                 "0771234567", VALID_BIRTH_YEAR, VALID_GENDER, 1, 1, TOMORROW, quarterPast, 1);
@@ -176,8 +169,7 @@ class AppointmentServiceTest {
     @DisplayName("Rejects today's date with a time that has already passed")
     void registerForNewPatient_rejectsPastTimeToday() {
         LocalTime aMinuteAgo = LocalTime.now().minusMinutes(1).withSecond(0).withNano(0);
-        // Round down to the current or previous 15-minute mark so it's still a "valid"
-        // slot shape, guaranteeing it is in the past relative to LocalTime.now().
+
         int roundedMinute = (aMinuteAgo.getMinute() / 15) * 15;
         LocalTime pastSlot = aMinuteAgo.withMinute(roundedMinute);
         assertThrows(ValidationException.class, () ->
@@ -185,9 +177,6 @@ class AppointmentServiceTest {
                         VALID_BIRTH_YEAR, VALID_GENDER, 1, 1, LocalDate.now(), pastSlot, 1));
     }
 
-    // ------------------------------------------------------------------
-    // Existing-patient registration
-    // ------------------------------------------------------------------
 
     @Test
     @DisplayName("Accepts an existing-patient booking and returns the generated appointment number")
@@ -196,7 +185,7 @@ class AppointmentServiceTest {
         when(appointmentDAO.isSlotTaken(1, TOMORROW, TEN_AM, ROOT_CANAL_DURATION)).thenReturn(false);
         when(appointmentDAO.registerExisting(eq(42), eq(1), eq(1), eq(TOMORROW), eq(TEN_AM), eq(1)))
                 .thenReturn("APT00002");
-        when(appointmentDAO.findByAppointmentNumber("APT00002")).thenReturn(new Appointment());
+        when(appointmentDAO.findByAppointmentNumber("APT00002")).thenReturn(sampleFullAppointment("APT00002"));
 
         String result = appointmentService.registerForExistingPatient(42, 1, 1, TOMORROW, TEN_AM, 1);
 
@@ -221,9 +210,6 @@ class AppointmentServiceTest {
                 appointmentService.registerForExistingPatient(42, 1, 1, TOMORROW, TEN_AM, 1));
     }
 
-    // ------------------------------------------------------------------
-    // Status updates
-    // ------------------------------------------------------------------
 
     @Test
     @DisplayName("Updates an appointment's status when given a valid status and an existing appointment")

@@ -3,11 +3,7 @@ package com.sunrise.dental.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/**
- * Aggregates a patient + dentist + treatment + schedule slot.
- * This is the central entity of the system (matches the "unique appointment
- * number per patient visit" requirement in the assessment brief).
- */
+
 public class Appointment {
     private int appointmentId;
     private String appointmentNumber;
@@ -17,6 +13,7 @@ public class Appointment {
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String status;
+    private Integer createdByUserId; // null if never set, or if that staff account has since been deleted
 
     public Appointment() {}
 
@@ -36,4 +33,6 @@ public class Appointment {
     public void setAppointmentTime(LocalTime appointmentTime) { this.appointmentTime = appointmentTime; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public Integer getCreatedByUserId() { return createdByUserId; }
+    public void setCreatedByUserId(Integer createdByUserId) { this.createdByUserId = createdByUserId; }
 }

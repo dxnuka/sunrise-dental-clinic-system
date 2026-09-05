@@ -14,31 +14,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * ---------------------------------------------------------------------------
- * DESIGN PATTERN: FRONT CONTROLLER
- * ---------------------------------------------------------------------------
- * A single servlet is the ONE entry point for every request (mapped to
- * /control). It is responsible for the cross-cutting concerns that would
- * otherwise be duplicated in every servlet: reading the "action" parameter,
- * enforcing "only authorized staff can use the system" (the login guard),
- * enforcing which actions are ADMIN-only (the role guard), catching any
- * stray exception so the user always sees a friendly message instead of a
- * stack trace, and finally forwarding to the right JSP view. The
- * action-specific work is delegated to small Command objects (see the
- * controller.handler package) looked up from the commandMap below.
- * ---------------------------------------------------------------------------
- */
+
 @WebServlet(name = "FrontControllerServlet", urlPatterns = {"/control"})
 public class FrontControllerServlet extends HttpServlet {
 
     private final Map<String, RequestHandler> commandMap = new HashMap<>();
-    // Actions that are allowed WITHOUT being logged in:
+
     private static final String[] PUBLIC_ACTIONS = {"login", "register"};
-    // Actions only an ADMIN-role user may reach - user management ("Add User" /
-    // "Manage Users"). Receptionists are redirected away with a warning if they
-    // try to navigate to one of these directly, not just hidden from the nav menu.
-    private static final String[] ADMIN_ONLY_ACTIONS = {"addUserPage", "addUser", "users", "deleteUser", "userDetail"};
+    private static final String[] ADMIN_ONLY_ACTIONS = {"addUserPage", "addUser", "users", "deleteUser", "userDetail",
+            "dentistsPage", "addDentist", "deactivateDentist", "deletePatient"};
 
     @Override
     public void init() {
@@ -64,6 +48,10 @@ public class FrontControllerServlet extends HttpServlet {
         commandMap.put("addUser", new AddUserHandler());
         commandMap.put("users", new UsersListHandler());
         commandMap.put("userDetail", new UserDetailHandler());
+        commandMap.put("dentistsPage", new DentistsPageHandler());
+        commandMap.put("addDentist", new AddDentistHandler());
+        commandMap.put("deactivateDentist", new DeactivateDentistHandler());
+        commandMap.put("deletePatient", new DeletePatientHandler());
         commandMap.put("deleteUser", new DeleteUserHandler());
     }
 
@@ -80,10 +68,7 @@ public class FrontControllerServlet extends HttpServlet {
     private void process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
 
-        // Visiting the bare /control URL with no action (e.g. a browser refresh of a
-        // page that was originally reached via a POSTed form, which shows just
-        // "/control" in the address bar with no query string) should land somewhere
-        // sensible rather than silently defaulting - redirect explicitly instead.
+
         if (action == null || action.trim().isEmpty()) {
             HttpSession session = req.getSession(false);
             if (session != null && session.getAttribute("loggedInUser") != null) {
@@ -94,7 +79,6 @@ public class FrontControllerServlet extends HttpServlet {
             return;
         }
 
-        // ---- Central authentication guard ("only authorized staff can use the system") ----
         User loggedInUser = null;
         if (!isPublic(action)) {
             HttpSession session = req.getSession(false);
@@ -106,7 +90,7 @@ public class FrontControllerServlet extends HttpServlet {
             loggedInUser = (User) session.getAttribute("loggedInUser");
         }
 
-        // ---- Central role guard (user management is ADMIN-only) ----
+
         if (isAdminOnly(action) && (loggedInUser == null || !"ADMIN".equals(loggedInUser.getRole()))) {
             MessageUtil.setWarning(req.getSession(), "You do not have permission to access that page.");
             resp.sendRedirect(req.getContextPath() + "/control?action=dashboard");
@@ -122,15 +106,11 @@ public class FrontControllerServlet extends HttpServlet {
             try {
                 target = handler.handle(req, resp);
             } catch (Exception e) {
-                // Central error handling: every handler's exceptions land here so
-                // the end user always gets a friendly message, never a raw stack trace.
                 MessageUtil.setError(req.getSession(), "Something went wrong: " + e.getMessage());
                 target = "error.jsp";
             }
         }
-        // A null target means the handler already wrote the response itself
-        // (e.g. a PDF download, a JSON search result, or a redirect) - nothing
-        // left to forward.
+
         if (target != null) {
             req.getRequestDispatcher("/" + target).forward(req, resp);
         }

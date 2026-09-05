@@ -13,17 +13,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JSON endpoint powering the add-appointment page's time-slot picker: given
- * a dentist + treatment + date, returns every 15-minute slot between 08:00
- * and 17:00 with an "available" flag, computed against that dentist's
- * existing SCHEDULED appointments on that date (using each existing
- * appointment's own treatment duration, and the candidate treatment's
- * duration, for a true overlap check) - so the UI can greyed-out/disable
- * conflicting slots before the user ever submits, rather than relying on
- * the reject-on-submit double-booking error as the primary feedback.
- * Writes JSON directly to the response and returns null (no JSP forward).
- */
 public class AvailableSlotsHandler implements RequestHandler {
     private final AppointmentService appointmentService = new AppointmentService();
 

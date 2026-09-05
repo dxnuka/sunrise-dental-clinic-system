@@ -3,12 +3,6 @@ package com.sunrise.dental.model;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Generic pagination wrapper used by the appointments list and patients list
- * screens, so every paginated DAO method returns the same simple shape:
- * the current page's rows plus enough metadata for the JSP to render page
- * controls (Previous / 1 2 3 / Next).
- */
 public class PageResult<T> {
     private final List<T> items;
     private final int currentPage;   // 1-based

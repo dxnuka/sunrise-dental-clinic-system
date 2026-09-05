@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ReportService {
-    /** Default date-range window applied whenever the user hasn't picked one. */
     public static final int DEFAULT_RANGE_DAYS = 30;
 
     private final ReportDAO reportDAO;

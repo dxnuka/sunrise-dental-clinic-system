@@ -24,8 +24,5 @@ jobs:
         run: mvn -B compile
 
       - name: Run unit tests
-        # Excludes LoginFlowAutomationTest: it drives a real browser against a
-        # running Tomcat + MySQL instance, which this CI runner doesn't have.
-        # AppointmentServiceTest and BillingServiceTest are pure Mockito-based
-        # unit tests and need no external services.
+
         run: mvn -B test -Dtest=AppointmentServiceTest,BillingServiceTest

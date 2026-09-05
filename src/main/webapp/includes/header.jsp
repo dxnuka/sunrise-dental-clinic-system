@@ -27,6 +27,7 @@
         <% if ("ADMIN".equals(loggedInUser.getRole())) { %>
         <a href="<%= request.getContextPath() %>/control?action=users" class="<%= "users".equals(currentAction) ? "active" : "" %>">Manage Users</a>
         <a href="<%= request.getContextPath() %>/control?action=addUserPage" class="<%= "addUserPage".equals(currentAction) ? "active" : "" %>">Add User</a>
+        <a href="<%= request.getContextPath() %>/control?action=dentistsPage" class="<%= "dentistsPage".equals(currentAction) ? "active" : "" %>">Dentists</a>
         <% } %>
         <a href="<%= request.getContextPath() %>/control?action=help" class="<%= "help".equals(currentAction) ? "active" : "" %>">Help</a>
         <a href="<%= request.getContextPath() %>/control?action=profile" class="user-chip-link">

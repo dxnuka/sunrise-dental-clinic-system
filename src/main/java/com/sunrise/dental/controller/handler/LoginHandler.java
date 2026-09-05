@@ -28,9 +28,6 @@ public class LoginHandler implements RequestHandler {
         session.setAttribute("loggedInUser", user);
         MessageUtil.setSuccess(session, "Welcome back, " + user.getFullName() + "!");
 
-        // A real HTTP redirect (not a forward) so the address bar actually shows
-        // ?action=dashboard afterward, and a page refresh never re-submits the
-        // login form (Post-Redirect-Get).
         response.sendRedirect(request.getContextPath() + "/control?action=dashboard");
         return null;
     }

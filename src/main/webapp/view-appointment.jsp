@@ -21,6 +21,7 @@
         <tr><th>Treatment</th><td><%= appointment.getTreatment().getTreatmentName() %> (<%= appointment.getTreatment().getDurationMinutes() %> min)</td></tr>
         <tr><th>Date</th><td><%= appointment.getAppointmentDate() %></td></tr>
         <tr><th>Time</th><td><%= appointment.getAppointmentTime() %></td></tr>
+        <tr><th>Created By (User ID)</th><td><%= appointment.getCreatedByUserId() != null ? appointment.getCreatedByUserId() : "null" %></td></tr>
     </table>
     <form method="post" action="<%= request.getContextPath() %>/control" style="margin-top:14px; display:inline-block;">
         <input type="hidden" name="action" value="generateBill">

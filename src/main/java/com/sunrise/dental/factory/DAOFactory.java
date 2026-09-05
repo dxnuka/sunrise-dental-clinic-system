@@ -3,19 +3,6 @@ package com.sunrise.dental.factory;
 import com.sunrise.dental.dao.*;
 import com.sunrise.dental.dao.impl.*;
 
-/**
- * ---------------------------------------------------------------------------
- * DESIGN PATTERN: FACTORY METHOD
- * ---------------------------------------------------------------------------
- * Centralises the creation of every DAO. Service classes call, e.g.,
- * DAOFactory.getAppointmentDAO() instead of "new AppointmentDAOImpl()"
- * directly. Combined with the DAO pattern, this means:
- *   1. Service code is decoupled from concrete DAO classes.
- *   2. Swapping AppointmentDAOImpl for a different implementation (a mock
- *      for unit tests, or a different persistence technology) only requires
- *      editing this one factory class.
- * ---------------------------------------------------------------------------
- */
 public class DAOFactory {
 
     private static final UserDAO USER_DAO = new UserDAOImpl();

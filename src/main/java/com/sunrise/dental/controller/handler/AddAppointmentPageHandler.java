@@ -5,8 +5,7 @@ import com.sunrise.dental.factory.DAOFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** Shows the dedicated "Add New Appointment" page (with its New/Existing
- *  patient toggle) and, on the same page, the "Add New User" staff form. */
+
 public class AddAppointmentPageHandler implements RequestHandler {
     @Override
     public String handle(HttpServletRequest request, HttpServletResponse response) {

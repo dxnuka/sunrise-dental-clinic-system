@@ -10,10 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Builds a printable/exportable PDF for any of the Reports screen's tables:
- * a title, the applied date range, and the report's headings + rows.
- */
 public class PdfReportGenerator {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd MMM yyyy");

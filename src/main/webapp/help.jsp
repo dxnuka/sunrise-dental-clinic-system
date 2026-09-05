@@ -39,12 +39,23 @@
         Adjust the range and click "Apply Range" to refresh a table, or "Generate PDF" to download
         that table as a printable PDF with the clinic name, report title, and date range on it.</div>
 
-    <div class="help-step"><b>7. Manage users (admins only).</b> Admins see two extra menu items:
+    <div class="help-step"><b>7. Manage users (admins only).</b> Admins see extra menu items:
         "Add User" creates a new login for a staff member as either Receptionist or Admin, and
         "Manage Users" lists every account with search, a role filter, and pagination - admins can
         delete a Receptionist account from there (Admin accounts can't be deleted through the UI).
+        Click any user's card to see their full details plus every appointment they've registered.
         Receptionists don't see these pages, and are redirected away if they try to open the links
         directly.</div>
+
+    <div class="help-step"><b>7b. Manage dentists (admins only).</b> The "Dentists" page lets an
+        admin add a new dentist (name, specialization, consultation fee) and view every dentist on
+        record. Deleting a dentist removes them from being selected for new appointments, but their
+        past appointments and bills are kept untouched.</div>
+
+    <div class="help-step"><b>7c. Deleting a patient (admins only).</b> From a patient's detail
+        page, an admin can delete their record - but only if that patient has no appointment
+        history. This keeps existing appointments and bills from ever losing their patient
+        information.</div>
 
     <div class="help-step"><b>8. Update your profile.</b> Click your name in the top-right menu to
         view and edit your own full name, birth year, and gender. Your username and role cannot be

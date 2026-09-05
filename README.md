@@ -37,11 +37,15 @@ a MySQL database created in MySQL Workbench.
    UPDATE users SET password_hash = '<paste-hash-here>' WHERE username = 'admin';
    ```
 
-**Upgrading an existing v1 database** (you already have data and a working password hash):
-**Upgrading an existing database**: run `database/migration_v2.sql` then `database/migration_v3.sql`
-in that order (v3 adds per-dentist consultation fees, patient birth year/gender, the
-one-bill-per-appointment constraint, and appointment status updates). If you're already on v2,
-just run v3.
+**Upgrading an existing database**: run whichever migrations you're missing, in order:
+`database/migration_v2.sql` → `database/migration_v3.sql` → `database/migration_v4.sql`.
+- v2: session/help-page groundwork from the first UI pass
+- v3: per-dentist consultation fees, patient birth year/gender, one-bill-per-appointment,
+  appointment status updates
+- v4: lets an admin delete a receptionist account without losing that receptionist's
+  historical appointments (their `created_by` is set to NULL instead of the delete being blocked)
+
+If you're already on v3, just run v4.
 
 ## 3. Configure the database connection
 
@@ -114,35 +118,42 @@ database/migration_v2.sql    <- upgrading an existing v1 database: run this inst
 
 ## 9. Feature overview
 
+- **Role-based access** — RECEPTIONIST accounts get every operational feature (appointments,
+  patients, reports, profile). ADMIN accounts additionally see "Add User" (create a Receptionist
+  or Admin login) and "Manage Users" (search/filter-by-role/paginate every account, with a Delete
+  button shown only on Receptionist cards). The Front Controller enforces this server-side, not
+  just by hiding the nav links - a Receptionist hitting the URL directly is redirected away.
 - **Appointments dashboard** — searchable, filterable (dentist/treatment/status), sortable,
   paginated card view of every appointment.
-- **Add Appointment page** — a New Patient / Existing Patient toggle, a live patient search box,
-  treatment-duration-aware scheduling (overlapping bookings for the same dentist are rejected),
-  and time slots restricted to fixed 30-minute blocks between 08:00 and 17:00 on today-or-future
-  dates only. The same page includes an "Add New User" form for creating staff accounts.
-- **Patients page** — searchable/paginated patient list; each patient's detail view always shows
-  three cards (Total Appointments, Last Appointment, Next Appointment), rendering "-" when N/A.
+- **Add Appointment page** — a New Patient / Existing Patient toggle, a live patient search box
+  (matches by name, contact number, or patient ID), treatment-duration-aware scheduling with a
+  server-computed time-slot picker that greys out unavailable 15-minute slots up front (rather
+  than only rejecting on submit), and dates restricted to today-or-future.
+- **Patients page** — searchable/paginated patient list (showing patient ID, birth year, gender);
+  each patient's detail view always shows three cards (Total Appointments, Last Appointment, Next
+  Appointment), rendering "-" when N/A.
 - **Reports** — each of the three report tables (Revenue by Treatment, Dentist Workload,
   Outstanding Bills) has its own date-range filter defaulting to the last 30 days, plus a
   "Generate PDF" button (via the OpenPDF library, added as a plain Maven dependency) that
   exports that table with the clinic name, report title, and applied date range printed.
 - **Profile page** — staff can view/edit their own name, birth year, and gender.
-- **Public self-registration** — new staff can create their own (Receptionist-level) account
-  from the login page; admins can create accounts of either role from the Add Appointment page.
+- **Public self-registration** — new staff can create their own Receptionist-level account
+  from the login page; admins provision either role from the "Add User" page.
 - **Validation everywhere** — every form field is validated both client-side (HTML5
   pattern/min/max) and server-side (`ValidationUtil`): names reject digits/symbols, contact
   numbers must be exactly 10 digits, birth years can't be in the future, appointment
-  date/times can't be in the past, and time slots must land on a valid 30-minute block.
+  date/times can't be in the past, and time slots must land on a valid 15-minute block.
 
 ## 10. Assumptions made
 
 - Each "appointment" implicitly registers a new patient record (the brief describes patient
   details as part of the appointment form, not a separate "manage patients" screen), matching
   section 2 of the brief.
-- Login roles are simplified to `ADMIN` and `RECEPTIONIST`; only `ADMIN` is seeded, since the
-  brief does not specify differentiated permissions — this is called out as a documented
-  assumption per the brief's "Students are free to make necessary assumptions... but all
-  suggestions must be well explained with valid reasons."
+- `RECEPTIONIST` is the operational role (appointments, patients, reports, profile); `ADMIN`
+  additionally gets user management and can still do everything a Receptionist can - the brief
+  doesn't specify differentiated permissions, so this two-tier split (with Admin retaining full
+  access rather than being restricted to user management only) is a documented assumption, made
+  so the single seeded account can both bootstrap the system and provision further staff.
 - Clinic opening hours are assumed to be 08:00–17:00 (last appointment starts at 17:00), with
   bookable slots fixed to 30-minute blocks, for the purposes of time validation and the
   duration-aware overlap check.

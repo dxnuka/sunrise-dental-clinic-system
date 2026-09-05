@@ -12,14 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Streams a PDF export of ONE report table (revenue / workload / outstanding)
- * for the date range supplied, with the clinic name, report title, applied
- * date range, and the table (headings + rows) printed - as required by the
- * "Generate Report" button next to each report. Writes directly to the
- * response and returns null so the Front Controller does not also forward
- * to a JSP.
- */
 public class GenerateReportPdfHandler implements RequestHandler {
     private final ReportService reportService = new ReportService();
 

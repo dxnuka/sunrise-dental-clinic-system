@@ -12,7 +12,6 @@
     LocalDate outstandingTo = (LocalDate) request.getAttribute("outstandingTo");
 %>
 
-<!-- ============ Revenue by Treatment ============ -->
 <div class="card">
     <h2>Revenue by Treatment Type</h2>
     <form method="get" action="<%= ctx %>/control" class="report-controls">
@@ -39,7 +38,6 @@
     </table>
 </div>
 
-<!-- ============ Dentist Workload ============ -->
 <div class="card">
     <h2>Dentist Workload</h2>
     <form method="get" action="<%= ctx %>/control" class="report-controls">
@@ -66,7 +64,6 @@
     </table>
 </div>
 
-<!-- ============ Outstanding Bills ============ -->
 <div class="card">
     <h2>Outstanding (Unpaid) Bills</h2>
     <form method="get" action="<%= ctx %>/control" class="report-controls">

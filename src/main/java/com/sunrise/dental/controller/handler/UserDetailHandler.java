@@ -8,10 +8,7 @@ import com.sunrise.dental.util.MessageUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** Shows one user's details plus every appointment they registered - reached
- *  by clicking a card on the admin-only Manage Users page. Access is
- *  restricted to ADMIN role by FrontControllerServlet's ADMIN_ONLY_ACTIONS
- *  check before this ever runs. */
+
 public class UserDetailHandler implements RequestHandler {
     private final AuthService authService = new AuthService();
     private final AppointmentService appointmentService = new AppointmentService();

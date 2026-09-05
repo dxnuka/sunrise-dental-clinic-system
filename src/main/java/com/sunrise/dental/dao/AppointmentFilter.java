@@ -1,18 +1,17 @@
 package com.sunrise.dental.dao;
 
-/**
- * Query-criteria object for the paginated appointments list (dashboard).
- * Kept as a plain parameter object (not a persisted entity) so
- * AppointmentDAO.findPaged() doesn't need a long, error-prone parameter list.
- */
+import java.time.LocalDate;
+
 public class AppointmentFilter {
-    private String searchTerm;      // matches patient name, appointment number, dentist, or treatment
-    private Integer dentistId;      // null = any dentist
-    private Integer treatmentId;    // null = any treatment
-    private String status;         // null = any status; else SCHEDULED/COMPLETED/CANCELLED
-    private String sortField = "date"; // date | patient | dentist | treatment
-    private String sortDir = "asc";    // asc | desc
-    private int page = 1;               // 1-based
+    private String searchTerm;
+    private Integer dentistId;
+    private Integer treatmentId;
+    private String status;
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
+    private String sortField = "date";
+    private String sortDir = "asc";
+    private int page = 1;
     private int pageSize = 9;
 
     public String getSearchTerm() { return searchTerm; }
@@ -23,6 +22,10 @@ public class AppointmentFilter {
     public void setTreatmentId(Integer treatmentId) { this.treatmentId = treatmentId; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public LocalDate getDateFrom() { return dateFrom; }
+    public void setDateFrom(LocalDate dateFrom) { this.dateFrom = dateFrom; }
+    public LocalDate getDateTo() { return dateTo; }
+    public void setDateTo(LocalDate dateTo) { this.dateTo = dateTo; }
     public String getSortField() { return sortField; }
     public void setSortField(String sortField) { this.sortField = sortField; }
     public String getSortDir() { return sortDir; }

@@ -7,16 +7,13 @@
 
     <display-name>Sunrise Dental Clinic - Appointment &amp; Patient Management System</display-name>
 
-    <!-- FrontControllerServlet is registered via @WebServlet annotation in
-         com.sunrise.dental.controller.FrontControllerServlet, so no explicit
-         <servlet> mapping is required here (Servlet 3.0+ annotation scanning). -->
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
     <session-config>
-        <session-timeout>30</session-timeout> <!-- minutes -->
+        <session-timeout>30</session-timeout>
     </session-config>
 
     <error-page>

@@ -8,7 +8,7 @@ public class LogoutHandler implements RequestHandler {
     @Override
     public String handle(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
-        if (session != null) session.invalidate(); // clears the login session entirely
+        if (session != null) session.invalidate();
         return "index.jsp";
     }
 }

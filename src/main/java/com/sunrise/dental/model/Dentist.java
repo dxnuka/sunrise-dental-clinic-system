@@ -7,6 +7,7 @@ public class Dentist {
     private String dentistName;
     private String specialization;
     private BigDecimal consultationFee;
+    private boolean active = true;
 
     public Dentist() {}
 
@@ -25,6 +26,8 @@ public class Dentist {
     public void setSpecialization(String specialization) { this.specialization = specialization; }
     public BigDecimal getConsultationFee() { return consultationFee; }
     public void setConsultationFee(BigDecimal consultationFee) { this.consultationFee = consultationFee; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
     @Override
     public String toString() { return dentistName; }

@@ -22,7 +22,6 @@ public class UpdateProfileHandler implements RequestHandler {
 
         try {
             authService.updateProfile(current.getUserId(), fullName, birthYear, gender);
-            // Refresh the session copy so the header/name updates immediately.
             User updated = authService.findById(current.getUserId());
             session.setAttribute("loggedInUser", updated);
             MessageUtil.setSuccess(session, "Profile updated successfully.");

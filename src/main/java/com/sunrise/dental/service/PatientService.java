@@ -24,7 +24,6 @@ public class PatientService {
         this.appointmentDAO = appointmentDAO;
     }
 
-    /** Live search used by the "existing patient" box on the add-appointment form. */
     public List<Patient> search(String query) {
         if (query == null || query.trim().length() < 2) return new ArrayList<>();
         return patientDAO.search(query.trim(), 10);
@@ -34,8 +33,6 @@ public class PatientService {
         return patientDAO.findPaged(filter);
     }
 
-    /** Always returns a PatientSummary with all 3 stat fields populated (or null
-     *  for last/next appointment when there is none - the JSP renders "-" for those). */
     public PatientSummary getSummary(int patientId) throws ValidationException {
         Patient patient = patientDAO.findById(patientId);
         if (patient == null) throw new ValidationException("Patient not found.");
@@ -46,5 +43,17 @@ public class PatientService {
         summary.setLastAppointment(appointmentDAO.findLastAppointmentForPatient(patientId));
         summary.setNextAppointment(appointmentDAO.findNextAppointmentForPatient(patientId));
         return summary;
+    }
+
+    public void deletePatient(int patientId) throws ValidationException {
+        Patient patient = patientDAO.findById(patientId);
+        if (patient == null) throw new ValidationException("Patient not found.");
+        int appointmentCount = appointmentDAO.countForPatient(patientId);
+        if (appointmentCount > 0) {
+            throw new ValidationException(
+                "This patient has " + appointmentCount + " appointment(s) on record and cannot be deleted. " +
+                "Patients with appointment history are kept to preserve those records.");
+        }
+        patientDAO.delete(patientId);
     }
 }

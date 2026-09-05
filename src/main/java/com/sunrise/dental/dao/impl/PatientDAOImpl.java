@@ -26,8 +26,6 @@ public class PatientDAOImpl implements PatientDAO {
     @Override
     public List<Patient> search(String query, int limit) {
         List<Patient> list = new ArrayList<>();
-        // Matches by name, contact number, OR exact/partial patient ID - lets staff
-        // look an existing patient up by whichever detail they have handy.
         String sql = "SELECT " + COLUMNS + " FROM patients " +
                      "WHERE patient_name LIKE ? OR contact_number LIKE ? OR CAST(patient_id AS CHAR) LIKE ? " +
                      "ORDER BY patient_name LIMIT ?";
@@ -106,6 +104,18 @@ public class PatientDAOImpl implements PatientDAO {
             throw new RuntimeException("Error loading patients: " + e.getMessage(), e);
         }
         return new PageResult<>(items, page, pageSize, total);
+    }
+
+    @Override
+    public void delete(int patientId) {
+        String sql = "DELETE FROM patients WHERE patient_id = ?";
+        try (Connection con = DBConnectionManager.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting patient: " + e.getMessage(), e);
+        }
     }
 
     private Patient mapRow(ResultSet rs) throws SQLException {

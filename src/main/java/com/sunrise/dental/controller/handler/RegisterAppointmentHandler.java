@@ -13,9 +13,6 @@ import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/** Handles submission of the add-appointment form for EITHER a brand-new
- *  patient (including their demographics) or an existing one, based on the
- *  "patientMode" toggle value. */
 public class RegisterAppointmentHandler implements RequestHandler {
     private final AppointmentService appointmentService = new AppointmentService();
 

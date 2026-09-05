@@ -2,8 +2,6 @@
 <%
     String flashType = (String) session.getAttribute("flashType");
     String flashMessage = (String) session.getAttribute("flashMessage");
-    // Flash pattern: read once, then clear immediately so a page refresh
-    // doesn't re-show a stale message.
     session.removeAttribute("flashType");
     session.removeAttribute("flashMessage");
     if (flashMessage != null) {

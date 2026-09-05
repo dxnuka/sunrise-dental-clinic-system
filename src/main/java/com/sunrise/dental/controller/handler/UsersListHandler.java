@@ -8,9 +8,6 @@ import com.sunrise.dental.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** Backs the admin-only "Manage Users" page: searchable, filterable by role,
- *  paginated - modelled on the Patients page. Access is restricted to ADMIN
- *  role by FrontControllerServlet's ADMIN_ONLY_ACTIONS check. */
 public class UsersListHandler implements RequestHandler {
     private final AuthService authService = new AuthService();
 

@@ -8,13 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Lightweight JSON endpoint powering the live "existing patient" search box
- * on the add-appointment page. Hand-builds the JSON itself (a handful of
- * fields) rather than pulling in a JSON library, keeping with the "native
- * Java and JSP" brief - this writes directly to the response and returns
- * null, signalling the Front Controller to skip its usual JSP forward.
- */
 public class SearchPatientsHandler implements RequestHandler {
     private final PatientService patientService = new PatientService();
 

@@ -3,8 +3,6 @@ package com.sunrise.dental.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/** SHA-256 password hashing. Run main() once to generate the hash for your
- *  chosen admin password, then paste it into database/schema.sql. */
 public class PasswordUtil {
 
     public static String hash(String plainText) {

@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
-/** Each of the 3 report tables has its OWN date-range filter, defaulting to
- *  the last 30 days when not supplied or unparsable. */
 public class ReportsHandler implements RequestHandler {
     private final ReportService reportService = new ReportService();
 

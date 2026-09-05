@@ -163,14 +163,7 @@ function clearSelectedPatient() {
     });
 })();
 
-// ---------------------------------------------------------------------------
-// Dynamic time-slot picker: requires dentist + treatment + date all chosen,
-// then fetches real availability from the server (which checks every
-// existing appointment for that dentist on that date, accounting for each
-// treatment's own duration) and renders every 15-minute slot with already-
-// booked or already-passed slots disabled (greyed out, unselectable) rather
-// than letting the user pick a conflicting slot and find out on submit.
-// ---------------------------------------------------------------------------
+
 (function() {
     var dentistSelect = document.getElementById('dentistSelect');
     var treatmentSelect = document.getElementById('treatmentSelect');
@@ -220,8 +213,6 @@ function clearSelectedPatient() {
     dateInput.addEventListener('change', refreshAvailableSlots);
 })();
 
-// Guard against submitting "Existing Patient" mode without an actual selection
-// (the "required" attribute has no effect on hidden inputs across browsers).
 document.getElementById('appointmentForm').addEventListener('submit', function(e) {
     var mode = document.getElementById('patientModeField').value;
     var existingId = document.getElementById('existingPatientId').value;

@@ -15,14 +15,6 @@ public class BillDAOImpl implements BillDAO {
             "b.payment_status, b.generated_at, a.appointment_number " +
             "FROM bills b JOIN appointments a ON b.appointment_id = a.appointment_id ";
 
-    /**
-     * Calls sp_generate_bill, which itself guarantees one bill per appointment
-     * (returning the existing bill_id/total if one is already there rather than
-     * inserting a duplicate). The stored procedure's OUT params only give us
-     * bill_id + total, so we follow up with a SELECT to fully populate the
-     * Bill object (base fee, consultation fee, generated-at timestamp, payment
-     * status) that the bill/receipt view needs to display.
-     */
     @Override
     public Bill generateBill(int appointmentId) {
         String call = "{CALL sp_generate_bill(?,?,?)}";

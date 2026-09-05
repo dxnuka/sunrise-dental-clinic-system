@@ -17,12 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-/**
- * Business Logic Tier for appointments. Depends only on AppointmentDAO/
- * TreatmentDAO interfaces (obtained via the DAO Factory), which is what lets
- * AppointmentServiceTest mock those DAOs and test validation/double-booking
- * rules with no real database - see docs/testing-and-tdd.md.
- */
 public class AppointmentService {
 
     private static final List<String> ALLOWED_STATUSES = List.of("SCHEDULED", "COMPLETED", "CANCELLED");
@@ -34,13 +28,11 @@ public class AppointmentService {
         this(DAOFactory.getAppointmentDAO(), DAOFactory.getTreatmentDAO());
     }
 
-    /** Constructor-injection overload used by unit tests to pass in mock DAOs. */
     public AppointmentService(AppointmentDAO appointmentDAO, TreatmentDAO treatmentDAO) {
         this.appointmentDAO = appointmentDAO;
         this.treatmentDAO = treatmentDAO;
     }
 
-    /** Registers a brand-new patient (with demographics) plus their appointment. */
     public String registerForNewPatient(String patientName, String address, String contact,
                                          Integer birthYear, String gender,
                                          int dentistId, int treatmentId,
@@ -61,7 +53,6 @@ public class AppointmentService {
         return appointmentNumber;
     }
 
-    /** Books an appointment for a patient who already exists in the system. */
     public String registerForExistingPatient(int patientId, int dentistId, int treatmentId,
                                               LocalDate date, LocalTime time, int staffUserId)
             throws ValidationException, DoubleBookingException {
@@ -73,9 +64,6 @@ public class AppointmentService {
         publishRegisteredEvent(appointmentNumber);
         return appointmentNumber;
     }
-
-    /** Shared validation: dentist/treatment selected, date/time rules, and the
-     *  overlap-aware double-booking guard (defence in depth alongside the DB trigger). */
     private void validateScheduleAndGetDuration(int dentistId, int treatmentId, LocalDate date, LocalTime time)
             throws ValidationException, DoubleBookingException {
 
@@ -108,18 +96,14 @@ public class AppointmentService {
         return appointmentDAO.findPaged(filter);
     }
 
-    /** Returns, for every 15-minute slot in clinic hours, whether it is free for this
-     *  dentist+treatment+date combination - powers the grey-out-unavailable-slots UI. */
     public List<Appointment> findScheduledForDentistOnDate(int dentistId, LocalDate date) {
         return appointmentDAO.findScheduledForDentistOnDate(dentistId, date);
     }
 
-    /** Every appointment a given staff member registered - backs the admin-only user detail view. */
     public List<Appointment> findCreatedByUser(int userId) {
         return appointmentDAO.findCreatedByUser(userId);
     }
 
-    /** Changes an appointment's status (e.g. SCHEDULED -> COMPLETED or CANCELLED). */
     public void updateStatus(String appointmentNumber, String newStatus) throws ValidationException {
         ValidationUtil.requireNonBlank(appointmentNumber, "Appointment number");
         if (newStatus == null || !ALLOWED_STATUSES.contains(newStatus)) {

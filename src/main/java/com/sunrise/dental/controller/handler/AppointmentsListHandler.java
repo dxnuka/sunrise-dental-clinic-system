@@ -8,9 +8,9 @@ import com.sunrise.dental.service.AppointmentService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 
-/** Backs the dashboard: a searchable / filterable / sortable / paginated
- *  card-view list of every appointment. */
+
 public class AppointmentsListHandler implements RequestHandler {
     private final AppointmentService appointmentService = new AppointmentService();
 
@@ -21,6 +21,8 @@ public class AppointmentsListHandler implements RequestHandler {
         filter.setDentistId(parseIntOrNull(request.getParameter("dentistId")));
         filter.setTreatmentId(parseIntOrNull(request.getParameter("treatmentId")));
         filter.setStatus(emptyToNull(request.getParameter("status")));
+        filter.setDateFrom(parseDateOrDefault(request.getParameter("dateFrom"), LocalDate.now().minusDays(7)));
+        filter.setDateTo(parseDateOrDefault(request.getParameter("dateTo"), LocalDate.now().plusDays(7)));
         filter.setSortField(defaultIfBlank(request.getParameter("sort"), "date"));
         filter.setSortDir(defaultIfBlank(request.getParameter("dir"), "asc"));
         filter.setPage(parseIntOrDefault(request.getParameter("page"), 1));
@@ -42,6 +44,10 @@ public class AppointmentsListHandler implements RequestHandler {
     private int parseIntOrDefault(String s, int def) {
         try { return (s == null || s.trim().isEmpty()) ? def : Integer.parseInt(s.trim()); }
         catch (NumberFormatException e) { return def; }
+    }
+    private LocalDate parseDateOrDefault(String s, LocalDate def) {
+        try { return (s == null || s.trim().isEmpty()) ? def : LocalDate.parse(s.trim()); }
+        catch (Exception e) { return def; }
     }
     private String emptyToNull(String s) { return (s == null || s.trim().isEmpty()) ? null : s.trim(); }
     private String defaultIfBlank(String s, String def) { return (s == null || s.trim().isEmpty()) ? def : s.trim(); }

@@ -8,8 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/** Lets staff move an appointment from SCHEDULED to COMPLETED or CANCELLED
- *  from the appointment detail view. */
+
 public class UpdateAppointmentStatusHandler implements RequestHandler {
     private final AppointmentService appointmentService = new AppointmentService();
 

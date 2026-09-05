@@ -1,11 +1,5 @@
 package com.sunrise.dental.model;
 
-/**
- * Aggregates a Patient with its appointment statistics, backing the patient
- * detail page's three always-present cards (Total Appointments, Last
- * Appointment, Next Appointment). lastAppointment / nextAppointment are
- * null when there is no such appointment - the JSP renders "-" in that case.
- */
 public class PatientSummary {
     private Patient patient;
     private int totalAppointments;
